@@ -15,8 +15,8 @@
       to drive positive impact globally.
 
 👀 I’m interested in ...
-    Responsible Technology, its use cases, and adoption
-    Developing ideas from concept to launch
+    - Responsible Technology, its use cases, and adoption
+    - Developing ideas from concept to launch
     Understanding pain points and delivering creative solutions
     Leading and motivating cross-functional teams and people
     Diving deep into data to inform strategic decisions
