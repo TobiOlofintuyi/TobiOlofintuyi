@@ -5,7 +5,7 @@
     solutions that drive business impact and affect positive 
     cultural change. 
     
-    Co-Founder for Project Elevate
+    Co-Founder for Inyeon AI
       An early stage mental health start-up leveraging AI and 
       generative technology to help people develop mental resilience
       and discover their best selves
