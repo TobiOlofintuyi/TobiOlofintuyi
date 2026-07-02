@@ -1,0 +1,86 @@
+/* ------------------------------------------------------------------ *
+ * Inyeon — global stylesheet
+ * Keyframes are copied verbatim from the design source. Base rules,
+ * theming of the canvas behind the phone, reduced-motion, and hit-target
+ * affordances implement the Optimization Handoff workstreams.
+ * ------------------------------------------------------------------ */
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; height: 100%; }
+#root { height: 100%; }
+
+body {
+  font-family: 'Outfit', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  /* The canvas behind the phone; swaps with the app theme. */
+  background: var(--canvas, #e7e2d8);
+  transition: background 400ms ease;
+  overflow: hidden;
+  /* Respect notches / rounded corners on installed devices. */
+  padding: env(safe-area-inset-top) env(safe-area-inset-right)
+           env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+html[data-theme='dark'] body { --canvas: #14100b; }
+html[data-theme='light'] body { --canvas: #e7e2d8; }
+
+/* Dynamic type: let the serif voice scale with the OS setting. */
+:root { font-size: 100%; }
+
+/* --- Keyframes (verbatim from the design) --- */
+@keyframes breath { 0%, 100% { transform: scale(.88); opacity: .72; } 50% { transform: scale(1.14); opacity: 1; } }
+@keyframes glow { 0%, 100% { opacity: .5; } 50% { opacity: 1; } }
+@keyframes drift { 0% { transform: translate(0,0); } 50% { transform: translate(14px,-18px); } 100% { transform: translate(0,0); } }
+@keyframes rise { from { opacity: 0; transform: translateY(14px) scale(.98); } to { opacity: 1; transform: none; } }
+@keyframes risesm { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes growin { from { opacity: .5; transform: scale(.66); } to { opacity: 1; transform: scale(1); } }
+@keyframes deepbreath { 0%, 100% { transform: scale(.7); opacity: .8; } 50% { transform: scale(1.18); opacity: 1; } }
+@keyframes sway { 0%, 100% { transform: rotate(-0.9deg); } 50% { transform: rotate(0.9deg); } }
+@keyframes lungbreath { 0%, 100% { transform: scale(.985); } 50% { transform: scale(1.04); } }
+@keyframes flowdash { to { stroke-dashoffset: -34; } }
+@keyframes guide { 0% { opacity: 0; } 14% { opacity: 1; } 68% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes beckon { 0% { transform: scale(1); opacity: .55; } 100% { transform: scale(2.7); opacity: 0; } }
+
+/* Hover affordance for the choosing-ritual option cards (the design used a
+   runtime pseudo-class; here it's a plain CSS class). */
+.opt-card { transition: all .25s ease; }
+.opt-card:hover { border-color: rgba(228,184,114,.6) !important; background: rgba(255,240,210,.07) !important; }
+
+/* Every quiet mono action / chip reaches a 44px target via invisible padding,
+   without shifting layout. */
+.hit { position: relative; }
+.hit::after {
+  content: '';
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  min-width: 44px; min-height: 44px;
+  width: 100%; height: 100%;
+}
+
+textarea, input { font-family: inherit; }
+button { -webkit-tap-highlight-color: transparent; }
+
+/* Hide scrollbars inside the phone surface while keeping scroll. */
+.scroll-y { overflow-y: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.scroll-y::-webkit-scrollbar { display: none; }
+
+/* Ambient animations (motes, sway, glow) pause when the tab is hidden. */
+html.tab-hidden *, html.tab-hidden *::before, html.tab-hidden *::after {
+  animation-play-state: paused !important;
+}
+
+/* --- prefers-reduced-motion: every transition becomes a 150ms opacity fade;
+   breath/deepbreath become a still ring; ambient drift/sway/flow stop. --- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 150ms !important;
+    transition-property: opacity !important;
+    scroll-behavior: auto !important;
+  }
+  .rm-fade { animation: fade .15s ease both !important; }
+}

@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="mbg" cx="50%" cy="48%" r="75%">
+      <stop offset="0%" stop-color="#2A1E14"/>
+      <stop offset="46%" stop-color="#17110B"/>
+      <stop offset="100%" stop-color="#0C0906"/>
+    </radialGradient>
+    <radialGradient id="mhalo" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="rgba(240,196,126,0.42)"/>
+      <stop offset="70%" stop-color="rgba(240,196,126,0)"/>
+    </radialGradient>
+    <radialGradient id="member" cx="40%" cy="35%" r="70%">
+      <stop offset="0%" stop-color="#FBEAC4"/>
+      <stop offset="68%" stop-color="#D6963F"/>
+      <stop offset="100%" stop-color="#B07830"/>
+    </radialGradient>
+  </defs>
+  <!-- full-bleed background; content kept within the ~80% safe zone -->
+  <rect width="512" height="512" fill="url(#mbg)"/>
+  <g fill="none" stroke="#C99A46" stroke-linecap="round" stroke-linejoin="round" opacity="0.32">
+    <path d="M256 384 Q253 322 256 262" stroke-width="8"/>
+    <path d="M256 320 Q226 300 208 272" stroke-width="5.4"/>
+    <path d="M256 306 Q286 286 304 258" stroke-width="5.4"/>
+  </g>
+  <circle cx="208" cy="272" r="7" fill="#A0794E" opacity="0.7"/>
+  <circle cx="304" cy="258" r="8" fill="#C0834A"/>
+  <circle cx="256" cy="246" r="120" fill="url(#mhalo)"/>
+  <circle cx="256" cy="246" r="23" fill="url(#member)"/>
+</svg>
