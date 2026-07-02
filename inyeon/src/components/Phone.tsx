@@ -8,9 +8,12 @@ import { Settings } from './screens/Settings'
 import { Detail } from './screens/Detail'
 import { Forest } from './screens/Forest'
 import { Landscape } from './screens/Landscape'
+import { Todos, Patterns, People, Explorer, Witness, Mailbox } from './screens/Sections'
+import { Backroom, Chair, Provenance } from './screens/Builder'
 import { NodePanel } from './overlays/NodePanel'
 import { Compose } from './overlays/Compose'
 import { EntryView } from './overlays/EntryView'
+import { Switcher } from './overlays/Switcher'
 
 export function Phone({ bezel }: { bezel: boolean }) {
   const v = useVals()
@@ -44,10 +47,24 @@ export function Phone({ bezel }: { bezel: boolean }) {
       {v.settingsMode && <Settings v={v} />}
       {v.detailMode && <Detail v={v} />}
 
+      {/* sections beyond the redesign scope (via the app switcher) */}
+      {v.todosMode && <Todos v={v} />}
+      {v.patternsMode && <Patterns v={v} />}
+      {v.peopleMode && <People v={v} />}
+      {v.explorerMode && <Explorer v={v} />}
+      {v.witnessMode && <Witness v={v} />}
+      {v.mailboxMode && <Mailbox v={v} />}
+
+      {/* builder mode surfaces */}
+      {v.builderMode && v.backroomMode && <Backroom v={v} />}
+      {v.builderMode && v.chairMode && <Chair v={v} />}
+      {v.builderMode && v.provenanceMode && <Provenance v={v} />}
+
       {/* overlays */}
       {v.panelOpen && <NodePanel v={v} />}
       {v.composeOpen && <Compose v={v} />}
       {v.entryPanelOpen && <EntryView v={v} />}
+      {v.switcherOpen && <Switcher v={v} />}
     </div>
   )
 

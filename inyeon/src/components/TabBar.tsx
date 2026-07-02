@@ -1,7 +1,7 @@
 import { s } from '../css'
 import type { Vals } from './types'
 
-type IconKind = 'journal' | 'entries' | 'insights' | 'settings'
+type IconKind = 'journal' | 'entries' | 'insights' | 'settings' | 'apps'
 
 function Icon({ kind, color }: { kind: IconKind; color: string }) {
   const round = s(`stroke:${color}; stroke-width:2; stroke-linecap:round; stroke-linejoin:round`)
@@ -30,6 +30,20 @@ function Icon({ kind, color }: { kind: IconKind; color: string }) {
         <path d="M12 9L16.5 4.5" />
         <circle cx="7.5" cy="8.5" r="1.4" fill={color} stroke="none" />
         <circle cx="16.5" cy="4.5" r="1.4" fill={color} stroke="none" />
+      </svg>
+    )
+  if (kind === 'apps')
+    return (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style={round} aria-hidden="true">
+        <circle cx="6" cy="6" r="1.7" />
+        <circle cx="12" cy="6" r="1.7" />
+        <circle cx="18" cy="6" r="1.7" />
+        <circle cx="6" cy="12" r="1.7" />
+        <circle cx="12" cy="12" r="1.7" />
+        <circle cx="18" cy="12" r="1.7" />
+        <circle cx="6" cy="18" r="1.7" />
+        <circle cx="12" cy="18" r="1.7" />
+        <circle cx="18" cy="18" r="1.7" />
       </svg>
     )
   return (
@@ -73,6 +87,7 @@ export function TabBar({ v, variant, active, pos }: { v: Vals; variant: 'light' 
       <Tab label="Entries" kind="entries" color={col('entries')} active={active === 'entries'} onClick={v.nav.entries} />
       <Tab label="Insights" kind="insights" color={col('insights')} active={active === 'insights'} onClick={v.toForest} />
       <Tab label="Settings" kind="settings" color={col('settings')} active={active === 'settings'} onClick={v.nav.settings} />
+      <Tab label="Apps" kind="apps" color={col('apps')} active={active === 'apps'} onClick={v.onSwitcherOpen} />
     </nav>
   )
 }

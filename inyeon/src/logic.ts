@@ -65,6 +65,13 @@ export interface State {
   promptDismissals: number
   questionsRested: number
   promptsRestingUntil: number | null
+  // App switcher + sections beyond the redesign scope.
+  switcherOpen: boolean
+  todos: { id: string; text: string; done: boolean }[]
+  todoDraft: string
+  personOpen: string | null
+  // Builder mode: the principal/builder surfaces, off for journalers.
+  builderMode: boolean
 }
 
 const INITIAL: State = {
@@ -82,6 +89,14 @@ const INITIAL: State = {
   times: { am: '7:30 AM', mid: '12:30 PM', eve: '9:00 PM' },
   theme: 'dark', speakWriting: false, speakText: '', barShown: false,
   promptDismissals: 0, questionsRested: 0, promptsRestingUntil: null,
+  switcherOpen: false,
+  todos: [
+    { id: 't1', text: 'Call Dad back when there is a little to give', done: false },
+    { id: 't2', text: 'Once today: soften the shoulders, name the feeling', done: false },
+    { id: 't3', text: 'Rest once this week, without earning it', done: false },
+  ],
+  todoDraft: '', personOpen: null,
+  builderMode: false,
 }
 
 // Keys that carry the person's practice + preferences across sessions. Transient
@@ -91,9 +106,15 @@ const PERSIST_KEYS: (keyof State)[] = [
   'obKept', 'obIntent', 'obOwn', 'obRhythm', 'obText', 'obBody', 'obRemoved', 'obTender',
   'held', 'delivery', 'warm', 'remind', 'days', 'installGone', 'pname', 'times', 'theme',
   'promptDismissals', 'questionsRested', 'promptsRestingUntil',
+  'todos', 'builderMode',
 ]
 
-const MAIN_MODES = new Set(['speak', 'entries', 'settings', 'intention', 'forest', 'detail'])
+const SECTION_MODES = ['todos', 'patterns', 'people', 'explorer', 'witness', 'mailbox'] as const
+const BUILDER_MODES = ['backroom', 'chair', 'provenance'] as const
+const MAIN_MODES = new Set([
+  'speak', 'entries', 'settings', 'intention', 'forest', 'detail',
+  ...SECTION_MODES, ...BUILDER_MODES,
+])
 
 function stop(fn: (e?: EventLike) => void) {
   return (e?: EventLike) => { if (e && e.stopPropagation) e.stopPropagation(); fn(e) }
@@ -171,7 +192,7 @@ export class Logic {
   go(m: string, extra?: Partial<State>) {
     return (e?: EventLike) => {
       if (e && e.stopPropagation) e.stopPropagation()
-      this.setState({ mode: m, openId: null, hoverId: null, entryOpen: null, composeFor: null, drill: null, barShown: false, ...(extra || {}) })
+      this.setState({ mode: m, openId: null, hoverId: null, entryOpen: null, composeFor: null, drill: null, barShown: false, switcherOpen: false, personOpen: null, ...(extra || {}) })
     }
   }
 
@@ -594,6 +615,136 @@ export class Logic {
     }
   }
 
+  // Sections beyond the redesign scope (the app switcher) + builder mode.
+  buildExtras(): Any {
+    const S = this.state
+
+    // Which switcher item the current mode belongs to.
+    const activeKey =
+      S.mode === 'speak' ? 'journal'
+      : S.mode === 'forest' ? 'intentions'
+      : S.mode === 'intention' || S.mode === 'choosing' ? 'insight'
+      : S.mode
+
+    const item = (key: string, label: string, sub: string, mode: string, extra?: Partial<State>) => ({
+      key, label, sub, active: activeKey === key, onTap: this.go(mode, extra),
+    })
+    const switcherGroups = [
+      {
+        key: 'write', label: 'Write',
+        items: [
+          item('journal', 'Journal', 'Capture an entry — voice or text — and see it reflected', 'speak'),
+          item('todos', 'To-dos', 'Tasks you’ve captured — visible and checkable', 'todos'),
+          item('intentions', 'Intentions', 'What you’re moving toward — reflections attach as you write', 'forest'),
+        ],
+      },
+      {
+        key: 'reflect', label: 'Reflect',
+        items: [
+          item('patterns', 'Patterns', 'Recurring themes and your inner-world map', 'patterns'),
+          item('insight', 'Insight', 'Your living practice surface', 'intention'),
+          item('people', 'People', 'Everyone and everything your reflections have named', 'people'),
+          item('explorer', 'Explorer', 'The flow of care: given, received, self', 'explorer'),
+        ],
+      },
+      {
+        key: 'life', label: 'Life',
+        items: [
+          item('witness', 'Witness', 'Your life inbox: messages, plans, reminders', 'witness'),
+          item('mailbox', 'Mailbox', 'Requests waiting to be acted on', 'mailbox'),
+        ],
+      },
+      ...(S.builderMode
+        ? [{
+            key: 'builder', label: 'Builder',
+            items: [
+              item('backroom', 'Back room', 'Walk the system’s architecture: capabilities, requests, ships, and seams', 'backroom'),
+              item('chair', 'Principals’ Chair', 'Oversight: the queue, the decisions in force, and the system’s health', 'chair'),
+              item('provenance', 'Provenance', 'Trace a thing from message to code', 'provenance'),
+            ],
+          }]
+        : []),
+    ]
+
+    // --- To-dos (functional, persisted; no streaks, no debt) ---
+    const todoRow = (t: { id: string; text: string; done: boolean }) => ({
+      key: t.id, text: t.text, done: t.done,
+      onToggle: stop(() => this.setState((s) => ({ todos: s.todos.map((x) => (x.id === t.id ? { ...x, done: !x.done } : x)) }))),
+    })
+    const todosOpen = S.todos.filter((t) => !t.done).map(todoRow)
+    const todosDone = S.todos.filter((t) => t.done).map(todoRow)
+
+    // --- Patterns: recurring themes, noticed, never scored (no counts) ---
+    const patternRows = [
+      { key: 'p1', eyebrow: SHAPELABEL.loop, phrase: 'Preparing for fights that are not coming.', intent: 'A', openId: 'a1' },
+      { key: 'p2', eyebrow: SHAPELABEL.somaticbeat, phrase: 'The body speaks first; the words follow.', intent: 'A', openId: 'a4' },
+      { key: 'p3', eyebrow: SHAPELABEL.openquestion, phrase: 'Rest keeps asking to be earned.', intent: 'A', openId: 'a6' },
+      { key: 'p4', eyebrow: SHAPELABEL.mirroredwords, phrase: 'Sorry, filling silences it was never meant for.', intent: 'B', openId: 'b1' },
+      { key: 'p5', eyebrow: SHAPELABEL.growtharc, phrase: 'Letting people in before certainty arrives.', intent: 'C', openId: 'c1' },
+    ].map((p) => ({
+      ...p,
+      onOpen: this.go('intention', { intent: p.intent as 'A' | 'B' | 'C', openId: p.openId, touched: true }),
+    }))
+
+    // --- People: everyone and everything the reflections have named ---
+    const PEOPLE = [
+      { k: 'maya', name: 'Maya', sub: 'the review, and a kindness that surprised you', quote: 'She asked how I was doing, like actually doing', date: 'Thursday, March 6' },
+      { k: 'dad', name: 'Dad', sub: 'a call you are finding your way back to', quote: 'I let it go to voicemail again, which I always feel bad about', date: 'Thursday, February 27' },
+      { k: 'mom', name: 'Mom', sub: 'in your safety circle, kept close', quote: '', date: '' },
+      { k: 'rishi', name: 'Rishi', sub: 'in your safety circle, kept close', quote: '', date: '' },
+    ]
+    const THINGS = [
+      { k: 'deadline', name: 'the deadline', sub: 'mentioned once, then let go', quote: 'if she brought up the deadline I missed', date: 'Thursday, March 6' },
+    ]
+    const personRow = (p: (typeof PEOPLE)[number]) => ({
+      key: p.k, name: p.name, sub: p.sub, hasQuote: !!p.quote,
+      open: S.personOpen === p.k, quote: p.quote, date: p.date,
+      onTap: stop(() => this.setState((s) => ({ personOpen: s.personOpen === p.k ? null : p.quote ? p.k : null }))),
+    })
+
+    const resting = !!S.promptsRestingUntil && Date.now() < (S.promptsRestingUntil || 0)
+
+    return {
+      switcherOpen: S.switcherOpen, switcherGroups,
+      onSwitcherOpen: stop(() => this.setState({ switcherOpen: true })),
+      onSwitcherClose: stop(() => this.setState({ switcherOpen: false })),
+      stopEv: (e: EventLike) => { if (e && e.stopPropagation) e.stopPropagation() },
+
+      todosOpen, todosDone, todosEmpty: S.todos.length === 0,
+      todoDraft: S.todoDraft,
+      onTodoDraft: (e: EventLike) => this.setState({ todoDraft: e?.target?.value ?? '' }),
+      onTodoAdd: stop(() => {
+        const t = (this.state.todoDraft || '').trim()
+        if (!t) return
+        this.setState((s) => ({ todos: s.todos.concat([{ id: 'u' + Date.now(), text: t, done: false }]), todoDraft: '' }))
+      }),
+      onTodoClear: stop(() => this.setState((s) => ({ todos: s.todos.filter((t) => !t.done) }))),
+
+      patternRows,
+      peopleRows: PEOPLE.map(personRow), thingRows: THINGS.map(personRow),
+
+      witnessReminder: 'Evenings at ' + S.times.eve + ' — your quiet hour, held for you.',
+      mailboxResting: resting,
+
+      builderMode: S.builderMode,
+      builderBg: S.builderMode ? '#8A5A30' : '#D8D2C6', builderRight: S.builderMode ? '2px' : 'auto', builderLeft: S.builderMode ? 'auto' : '2px',
+      onBuilder: stop(() => this.setState((s) => {
+        const on = !s.builderMode
+        const inBuilder = (BUILDER_MODES as readonly string[]).includes(s.mode)
+        return { builderMode: on, ...(!on && inBuilder ? { mode: 'speak' } : {}) }
+      })),
+      // Live oversight numbers — the team's surface, not the journaler's (Law 8/G1).
+      chairHealth: {
+        questionsRested: S.questionsRested,
+        promptDismissals: S.promptDismissals,
+        promptsResting: resting,
+        restingUntil: S.promptsRestingUntil ? new Date(S.promptsRestingUntil).toLocaleDateString() : null,
+        theme: S.theme,
+        delivery: S.delivery,
+      },
+    }
+  }
+
   renderVals(): Any {
     const { mode, intent, openId, hoverId, touched } = this.state
     const effMode = mode === 'intention' && !this.state.forms[intent] ? 'choosing' : mode
@@ -615,8 +766,12 @@ export class Logic {
       intentionMode: effMode === 'intention', forestMode: mode === 'forest', choosingMode: effMode === 'choosing', detailMode: mode === 'detail',
       ob1Mode: mode === 'ob1', ob2Mode: mode === 'ob2', ob3Mode: mode === 'ob3', ob4Mode: mode === 'ob4', ob5Mode: mode === 'ob5', ob6Mode: mode === 'ob6', ob7Mode: mode === 'ob7',
       breathMode: mode === 'breath', speakMode: mode === 'speak', entriesMode: mode === 'entries', settingsMode: mode === 'settings',
+      todosMode: mode === 'todos', patternsMode: mode === 'patterns', peopleMode: mode === 'people',
+      explorerMode: mode === 'explorer', witnessMode: mode === 'witness', mailboxMode: mode === 'mailbox',
+      backroomMode: mode === 'backroom', chairMode: mode === 'chair', provenanceMode: mode === 'provenance',
       promptShow: !this.state.promptGone && this.state.delivery === 'open',
       ...this.buildApp(),
+      ...this.buildExtras(),
       nav: {
         ob1: this.go('ob1'), ob2: this.go('ob2'), ob3: this.go('ob3'), ob4: this.go('ob4'), ob5: this.go('ob5'), ob6: this.go('ob6'),
         speak: this.go('speak'), entries: this.go('entries'), settings: this.go('settings'), detail: this.go('detail'),

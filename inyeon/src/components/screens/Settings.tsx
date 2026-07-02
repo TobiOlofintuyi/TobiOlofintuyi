@@ -149,6 +149,23 @@ export function Settings({ v }: { v: Vals }) {
           <span style={s(CHEV)}>›</span>
         </div>
 
+        {/* builder */}
+        <div style={s(SECTION)}>Builder</div>
+        <div style={s(`${CARD} padding:13px 15px; margin-bottom:16px;`)}>
+          <div style={s('display:flex; justify-content:space-between; align-items:center;')}>
+            <div>
+              <div style={s("font-family:'Outfit',sans-serif; font-weight:500; font-size:14px; color:#1A1816;")}>Builder mode</div>
+              <div style={s("font-family:'Outfit',sans-serif; font-size:12px; color:#A0968A;")}>The back room, the Principals’ Chair, and Provenance. For building Inyeon, not for journaling.</div>
+            </div>
+            <button onClick={v.onBuilder} role="switch" aria-checked={v.builderMode} aria-label="Builder mode" style={s(`position:relative; width:38px; height:22px; border-radius:999px; border:none; cursor:pointer; background:${v.builderBg}; flex:none;`)}>
+              <span style={s(`position:absolute; top:2px; right:${v.builderRight}; left:${v.builderLeft}; width:18px; height:18px; border-radius:50%; background:#F8F4EC;`)} />
+            </button>
+          </div>
+          {v.builderMode && (
+            <div style={s("font-family:'Source Serif 4',serif; font-style:italic; font-size:12.5px; color:#908A80; margin-top:9px; animation:risesm .2s ease;")}>The builder rooms are open, in Apps.</div>
+          )}
+        </div>
+
         {/* my data */}
         <div style={s(SECTION)}>My data</div>
         <div style={s(`${CARD} padding:4px 15px; margin-bottom:16px;`)}>
