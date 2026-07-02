@@ -1,0 +1,21 @@
+{
+  "name": "ori-sprite-t004-sovereignty-receipts",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "T-004 — Sovereignty receipt ledger (hash-chained agent-action receipts) staged for the ori-vault sprite.",
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12",
+    "hono": "^4"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7",
+    "@types/node": "^22",
+    "typescript": "^5",
+    "vitest": "^4"
+  }
+}
