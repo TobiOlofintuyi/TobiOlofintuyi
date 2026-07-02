@@ -1,5 +1,10 @@
 name: Deploy Inyeon to GitHub Pages
 
+# Publishes inyeon/dist to the gh-pages branch. Creating that branch
+# auto-enables GitHub Pages (branch source) on repos that never configured
+# Pages — no Settings toggle and no site-creation API call, which the
+# workflow GITHUB_TOKEN is not allowed to make.
+
 on:
   push:
     branches: [main]
@@ -9,27 +14,20 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 concurrency:
   group: pages
   cancel-in-progress: true
 
 jobs:
-  build:
+  build-deploy:
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: inyeon
     steps:
       - uses: actions/checkout@v4
-      # Creates/enables the Pages site (source: GitHub Actions) if it isn't
-      # already, so no manual Settings → Pages toggle is needed.
-      - uses: actions/configure-pages@v5
-        with:
-          enablement: true
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -37,16 +35,8 @@ jobs:
           cache-dependency-path: inyeon/package-lock.json
       - run: npm ci
       - run: npm run build
-      - uses: actions/upload-pages-artifact@v3
+      - uses: peaceiris/actions-gh-pages@v4
         with:
-          path: inyeon/dist
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: inyeon/dist
+          commit_message: 'Deploy Inyeon ${{ github.sha }}'
