@@ -1,0 +1,22 @@
+# fly.toml — clause.ink private preview
+# Deploy from clause-ink-site/:  fly launch --copy-config --no-deploy
+#                                fly secrets set BASIC_AUTH_USER=tobi BASIC_AUTH_PASS='<pick-one>'
+#                                fly deploy
+# The app serves dist/ behind mandatory basic auth (see deploy/entrypoint.sh).
+
+app = "clause-ink-preview"
+primary_region = "sea"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "256mb"

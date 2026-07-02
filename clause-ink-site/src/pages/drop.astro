@@ -9,29 +9,38 @@ const filingSteps = [
   {
     n: 1,
     title: 'Confirm you can file',
-    body: "DROP filing is for California residents. If you live in California, you're eligible. If you don't, you can still use the request generator below to write to companies directly.",
+    body: "DROP is for California residents — you live there, or you're domiciled there and away temporarily (think: where your primary residence is, which state issued your license, where you vote). If that's not you, the request generator below still works everywhere.",
   },
   {
     n: 2,
     title: 'Go to the official site',
-    body: 'Open privacy.ca.gov/drop — the state\'s own platform, run by the California Privacy Protection Agency. This page points you there; we never stand in for it.',
+    body: "Open privacy.ca.gov/drop — the state's own platform, run by CalPrivacy. This page points you there; we never stand in for it. Verify your residency through the California Identity Gateway or sign in with Login.gov (recommended if you already have an account).",
     link: { href: 'https://privacy.ca.gov/drop', label: 'privacy.ca.gov/drop' },
   },
   {
     n: 3,
-    title: 'Verify your identity',
-    body: 'DROP asks for enough information to confirm the request is really yours. This is what lets one declaration act on your behalf across every registered broker.',
+    title: 'Create your deletion profile',
+    body: 'You only need your name, date of birth, and ZIP code to file. Adding more — email addresses, phone numbers, a mobile advertising ID (MAID), connected-TV ID, or VIN — raises the odds brokers find and delete your records. You can come back and add more anytime.',
   },
   {
     n: 4,
-    title: 'Make one deletion request',
-    body: 'You declare your request once. The platform propagates it to all registered data brokers — you do not write to them one by one.',
+    title: 'Submit once — it fans out',
+    body: "Review and submit. One request goes to every registered data broker, current and future, unless you deliberately narrow it (you can uncheck specific brokers on DROP's data broker list page). Brokers match your identifiers against their records and must delete everything they can about you — not just the fields you provided.",
   },
   {
     n: 5,
-    title: 'Keep your receipt',
-    body: 'Save your confirmation. Then use the generator below to log it, mint a hash receipt, and start a paper trail you control — so later you can check whether it actually stuck.',
+    title: 'Save your DROP ID — that is your receipt',
+    body: "Your confirmation page shows a DROP ID. Save it: it's how you check your request status (status checking opens August 2026, and brokers have up to 90 days to report back). Then log the filing in the generator below to mint a hash receipt and start a paper trail you control.",
   },
+];
+
+// Official DROP status meanings, paraphrased from privacy.ca.gov/drop (checked 2026-07-02).
+const dropStatuses = [
+  { s: 'Deleted', d: 'The broker deleted your data and will no longer sell it (some legally exempt records may remain).', tone: 'teal' },
+  { s: 'Exempted', d: 'Everything the broker holds on you is exempt by law (public records, certain health data) — kept, but may still be protected under other laws.', tone: 'ink' },
+  { s: 'Opted-out', d: "No exact match found from what you provided — the broker still has your data but can't sell it. Adding more identifiers may convert this to Deleted.", tone: 'gold' },
+  { s: 'Record not found', d: 'The broker says it has nothing on you, or could not locate you from the information you gave.', tone: 'ink' },
+  { s: 'Pending', d: 'Not processed yet. Brokers may take up to 90 days to report how they handled your request.', tone: 'ink' },
 ];
 ---
 
@@ -83,12 +92,13 @@ const filingSteps = [
         </p>
         <p class="mt-4 text-ink-700 leading-relaxed">
           When DROP launched in January 2026, roughly <strong>545 data brokers</strong>
-          were on the state registry; by June 2026 that count hit a record
-          <strong>581</strong>. In the first weeks, about
-          <strong>215,000 Californians</strong> filed deletion requests — a number
-          that passed <strong>300,000</strong> by June 2026. One declaration,
-          propagated across all of them — the state shipping, with the force of law,
-          the thing privacy advocates have wanted for a decade.
+          were on the state registry; the state now counts <strong>over 600</strong>.
+          In the first weeks, about <strong>215,000 Californians</strong> filed
+          deletion requests — a number that passed <strong>300,000</strong> by June
+          2026. One declaration, propagated across all of them — and it covers future
+          brokers too: whoever registers next inherits your request. California is
+          the first in the world to ship this; only three other states (Oregon,
+          Texas, Vermont) even require brokers to register.
         </p>
 
         <h3 class="mt-9 text-lg font-semibold text-ink-900">The honest part: the verification gap</h3>
@@ -109,8 +119,8 @@ const filingSteps = [
 
       <aside class="space-y-4">
         <div class="rounded-2xl border border-ink-800/10 bg-white p-5 shadow-sm">
-          <p class="text-3xl font-semibold text-ink-950">581</p>
-          <p class="mt-1 text-sm text-ink-500">registered data brokers reached by one request <span class="text-ink-400">(Jun 2026 record; ~545 at Jan 2026 launch)</span></p>
+          <p class="text-3xl font-semibold text-ink-950">600+</p>
+          <p class="mt-1 text-sm text-ink-500">registered data brokers reached by one request <span class="text-ink-400">(state's count, Jul 2026; ~545 at launch)</span></p>
         </div>
         <div class="rounded-2xl border border-ink-800/10 bg-white p-5 shadow-sm">
           <p class="text-3xl font-semibold text-ink-950">300K+</p>
@@ -153,6 +163,28 @@ const filingSteps = [
         </li>
       ))}
     </ol>
+
+    <div class="mt-10 max-w-2xl">
+      <h3 class="text-lg font-semibold text-ink-900">After you file: what the statuses mean</h3>
+      <p class="mt-2 text-sm text-ink-600 leading-relaxed">
+        From August 2026 you can check your request with your DROP ID. Each broker
+        reports one of five statuses:
+      </p>
+    </div>
+    <div class="mt-4 grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+      {dropStatuses.map((st) => (
+        <div class="rounded-xl border border-ink-800/10 bg-white px-4 py-3 shadow-sm">
+          <p class={`text-sm font-semibold ${st.tone === 'teal' ? 'text-teal-600' : st.tone === 'gold' ? 'text-gold-500' : 'text-ink-900'}`}>{st.s}</p>
+          <p class="mt-1 text-xs text-ink-600 leading-relaxed">{st.d}</p>
+        </div>
+      ))}
+    </div>
+    <p class="mt-4 text-sm text-ink-500 max-w-2xl leading-relaxed">
+      Worth knowing: DROP reaches what brokers <em>collected about</em> you. Data you
+      gave a business directly (first-party data), legally exempt records, and
+      publicly available data are not deleted — for those, use the generator below
+      to ask the company itself.
+    </p>
 
     <p class="mt-6 text-sm text-ink-500 max-w-2xl leading-relaxed">
       <strong class="text-ink-700">Not in California?</strong> DROP is a

@@ -21,6 +21,10 @@ run's receipt. Exact commands to finish the private sprite deploy are below.
 
 ---
 
+[2026-07-02 14:55] | M3 | deploy scaffold | clause-ink-site/{Dockerfile,fly.toml,.dockerignore,deploy/nginx.conf,deploy/entrypoint.sh} | Tobi confirmed targets: **fly.io + sprites.dev** (no Cloudflare). No fly CLI/token on this runner either (probed: no flyctl, no FLY_* env, no ~/.fly), so shipped a ready-to-run **private fly.io deploy**: multi-stage Docker build (node → nginx), HTTP basic auth that **fails closed** (container refuses to start without `BASIC_AUTH_USER`/`BASIC_AUTH_PASS` secrets), no directory listing, HTML no-store. Two commands on the Mac — see "DEPLOY — what remains". | y (config; build+smoke re-verified 14/14) | — | Deploy execution still needs Tobi's Mac (fly auth lives there).
+
+[2026-07-02 14:55] | M1 | facts: official DROP page | src/pages/drop.astro | Tobi pasted the live privacy.ca.gov/drop content; folded the authoritative mechanics into the hub: broker count → **"over 600" (state's own count)**; walkthrough rewritten with the real flow (residency via California Identity Gateway / Login.gov; minimum = name+DOB+ZIP; optional identifiers MAID/CTV-ID/VIN; narrowing via the broker-list page; **save your DROP ID**; status checking opens Aug 2026; brokers report within 90 days); added the five official statuses (Deleted / Exempted / Opted-out / Record not found / Pending) and the what-won't-be-deleted caveat (first-party, exempt, public data). Smoke 14/14, zero console errors. | y | — | —
+
 [2026-07-02 06:26] | M3 | deploy | (probe only) | Deploy attempt → **BLOCKED**. Probed for sprite tooling: no `sprite`/`sprites` binary on PATH, no `~/.config/sprite` or `~/.sprite*`, no `SPRITES_DEV`/deploy env tokens, and `@sprites.dev/cli` is not on npm. Per Tobi's 2026-07-02 correction, STOP after local verify; do NOT fall back to any public host. | n (deploy) / y (local) | — | No sprite CLI or sprites.dev auth on this cloud runner; see "DEPLOY — what remains" below.
 
 [2026-07-02 06:25] | M3 | smoke-test | scratchpad/smoke.mjs (test harness, not shipped) | Headless Chromium (Playwright 1.56) smoke over served `dist/`: both routes load; generator matrix 3 rights × {CA,EU} = 6 letters each cite the correct statute and merge name+email; CA-delete surfaces DROP (callout + Delete Act cite); other-US-state fallback renders; log→receipt persists across reload (hash stable); email form submits (store-and-flag). **14/14 pass, 0 console errors.** | y | — | —
@@ -37,32 +41,37 @@ run's receipt. Exact commands to finish the private sprite deploy are below.
 
 ---
 
-## DEPLOY — what remains (private sprite, per Tobi's 2026-07-02 correction)
+## DEPLOY — what remains (private; fly.io or sprites.dev — Tobi's platforms)
 
-Target is **sprites.dev, private (only-Tobi)** — NOT Cloudflare, and NOT any
-public host. This cloud runner has **no sprite CLI and no sprites.dev auth**, so
-the deploy cannot be executed here. The built site is ready at
-`clause-ink-site/dist/` (static, 104K). On the Mac where the sprite CLI lives:
+Target confirmed by Tobi 2026-07-02: **fly.io and sprites.dev** (no Cloudflare).
+This cloud runner has neither fly auth nor a sprite CLI, so the deploy runs on
+the Mac. The surface must stay **private (only-Tobi)** until intentionally made
+public.
+
+### Option A — fly.io (config is committed; two commands)
+
+Everything is scaffolded in `clause-ink-site/` (Dockerfile, `fly.toml`,
+`deploy/`). Auth **fails closed** — the app will not serve at all without
+credentials, so it cannot be accidentally public:
 
 ```bash
 cd clause-ink-site
-npm install
-npm run build            # regenerates dist/  (already green here)
-
-# then deploy dist/ to a PRIVATE sprite using your installed sprite CLI.
-# Two patterns from the Sprite Stateful Database playbook:
-#   (a) tar-bundle exec:  tar czf site.tgz -C dist . && <sprite-cli> exec ... (unpack + serve dist)
-#   (b) Filesystem API push: <sprite-cli> fs push ./dist  →  serve as a static root
-# Replace <sprite-cli> with the actual binary/subcommands on your Mac.
+fly launch --copy-config --no-deploy     # accepts committed fly.toml (app: clause-ink-preview, region: sea)
+fly secrets set BASIC_AUTH_USER=tobi BASIC_AUTH_PASS='<pick-a-password>'
+fly deploy
 ```
 
-**Access-gating requirement (hard stop):** the surface must be visible to Tobi
-and no one else — no public domain, no directory listing, access gated by the
-sprite's own auth (token / allowlist). Before treating this as deployed, confirm
-the sprite serves `dist/` behind auth. If sprites.dev cannot guarantee only-Tobi
-access for a static surface, DO NOT deploy publicly — keep it local-only and note
-the gap here. `public/robots.txt` already disallows all crawlers as a backstop.
+Then open `https://clause-ink-preview.fly.dev`, enter the credentials, and run
+the verify-live checklist below.
 
-**Verify-live checklist once served:** load `/` and `/drop` (zero console
+### Option B — sprites.dev
+
+Build locally (`npm install && npm run build` → `dist/`, static, ~104K), then
+push `dist/` to a sprite with your CLI (tar-bundle exec or Filesystem API push)
+and confirm the sprite gates access behind its token/allowlist. If sprites.dev
+cannot guarantee only-Tobi access for a static surface, use Option A instead.
+
+**Verify-live checklist (either option):** load `/` and `/drop` (zero console
 errors), run one generator flow end-to-end (generate → copy → log → reload →
 receipt persists), then paste the private URL into this log.
+`public/robots.txt` disallows all crawlers as a backstop either way.
