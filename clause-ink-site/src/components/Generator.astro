@@ -1,0 +1,465 @@
+---
+// Data Rights Request Generator — client-side only (GR-01).
+// The request-side of the Clause PRD's "wallet for your agreements":
+// REQUEST / DELETE / PORT your data, statute-cited, generated in-browser,
+// with a local request log that mints a hash receipt per entry.
+---
+
+<section id="generator" class="scroll-mt-16">
+  <div class="mx-auto max-w-5xl px-5">
+    <div class="rounded-3xl border border-ink-800/10 bg-white shadow-sm overflow-hidden">
+      <!-- Header -->
+      <div class="bg-ink-950 text-paper-50 px-6 sm:px-9 py-8">
+        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-teal-400">
+          The tool
+        </p>
+        <h2 class="mt-2 text-2xl sm:text-3xl font-semibold tracking-tight">
+          Data Rights Request Generator
+        </h2>
+        <p class="mt-3 max-w-2xl text-ink-300 leading-relaxed">
+          Three rights, three picks, one letter. Pick what you want, where you
+          live, and who holds your data. We draft a plain-English, statute-cited
+          request you can copy or email yourself. It never leaves your browser —
+          you send it.
+        </p>
+      </div>
+
+      <div class="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
+        <!-- LEFT: the three picks -->
+        <div class="p-6 sm:p-9 border-b lg:border-b-0 lg:border-r border-ink-800/10 space-y-8">
+          <!-- Pick 1: the right -->
+          <div>
+            <div class="flex items-baseline gap-2">
+              <span class="text-xs font-bold text-teal-600">1</span>
+              <h3 class="font-semibold text-ink-900">What do you want to do?</h3>
+            </div>
+            <div id="right-picker" class="mt-3 grid gap-2" role="radiogroup" aria-label="Choose a right">
+              <button type="button" data-right="access" class="right-opt text-left rounded-xl border border-ink-800/15 px-4 py-3 hover:border-teal-500 transition-colors" role="radio" aria-checked="false">
+                <span class="font-medium text-ink-900">Request my data</span>
+                <span class="block text-sm text-ink-500">Get a copy of what a company holds about you (a DSAR).</span>
+              </button>
+              <button type="button" data-right="delete" class="right-opt text-left rounded-xl border border-ink-800/15 px-4 py-3 hover:border-teal-500 transition-colors" role="radio" aria-checked="false">
+                <span class="font-medium text-ink-900">Delete my data</span>
+                <span class="block text-sm text-ink-500">Ask a company to erase what it holds about you.</span>
+              </button>
+              <button type="button" data-right="port" class="right-opt text-left rounded-xl border border-ink-800/15 px-4 py-3 hover:border-teal-500 transition-colors" role="radio" aria-checked="false">
+                <span class="font-medium text-ink-900">Port my data</span>
+                <span class="block text-sm text-ink-500">Get it in a portable, machine-readable format to take elsewhere.</span>
+              </button>
+              <button type="button" data-right="correct" disabled class="text-left rounded-xl border border-dashed border-ink-800/15 px-4 py-3 opacity-60 cursor-not-allowed" aria-disabled="true" title="Correction is coming in a later release">
+                <span class="font-medium text-ink-700">Correct my data <span class="ml-1 text-[10px] uppercase tracking-wide rounded bg-ink-100 text-ink-500 px-1.5 py-0.5 align-middle">stub · coming</span></span>
+                <span class="block text-sm text-ink-400">Fix inaccurate information. Not in this release.</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Pick 2: jurisdiction -->
+          <div>
+            <div class="flex items-baseline gap-2">
+              <span class="text-xs font-bold text-teal-600">2</span>
+              <h3 class="font-semibold text-ink-900">Where do you live?</h3>
+            </div>
+            <div id="jur-picker" class="mt-3 grid gap-2" role="radiogroup" aria-label="Choose a jurisdiction">
+              <button type="button" data-jur="ca" class="jur-opt text-left rounded-xl border border-ink-800/15 px-4 py-3 hover:border-teal-500 transition-colors" role="radio" aria-checked="false">
+                <span class="font-medium text-ink-900">California</span>
+                <span class="block text-sm text-ink-500">CCPA / CPRA. For deletion, DROP may cover data brokers in one filing.</span>
+              </button>
+              <button type="button" data-jur="eu" class="jur-opt text-left rounded-xl border border-ink-800/15 px-4 py-3 hover:border-teal-500 transition-colors" role="radio" aria-checked="false">
+                <span class="font-medium text-ink-900">EU / UK</span>
+                <span class="block text-sm text-ink-500">GDPR — Article 15, 17, or 20.</span>
+              </button>
+              <button type="button" data-jur="other" class="jur-opt text-left rounded-xl border border-ink-800/15 px-4 py-3 hover:border-teal-500 transition-colors" role="radio" aria-checked="false">
+                <span class="font-medium text-ink-900">Other US state</span>
+                <span class="block text-sm text-ink-500">A general template citing your state law + the company's privacy policy.</span>
+              </button>
+            </div>
+            <div id="state-wrap" class="mt-3 hidden">
+              <label for="state-name" class="text-sm font-medium text-ink-700">Your state</label>
+              <input id="state-name" type="text" placeholder="e.g. Texas, Colorado, Virginia" autocomplete="off"
+                class="mt-1 w-full rounded-lg border border-ink-800/20 px-3 py-2 text-sm focus:border-teal-500 outline-none" />
+            </div>
+          </div>
+
+          <!-- Pick 3: company -->
+          <div>
+            <div class="flex items-baseline gap-2">
+              <span class="text-xs font-bold text-teal-600">3</span>
+              <h3 class="font-semibold text-ink-900">Which company?</h3>
+            </div>
+            <div class="mt-3 space-y-3">
+              <div>
+                <label for="company-select" class="text-sm font-medium text-ink-700">From the registry</label>
+                <select id="company-select" class="mt-1 w-full rounded-lg border border-ink-800/20 px-3 py-2 text-sm bg-white focus:border-teal-500 outline-none">
+                  <option value="">— pick a company —</option>
+                </select>
+              </div>
+              <div>
+                <label for="company-free" class="text-sm font-medium text-ink-700">…or type any company</label>
+                <input id="company-free" type="text" placeholder="e.g. Acme Analytics" autocomplete="off"
+                  class="mt-1 w-full rounded-lg border border-ink-800/20 px-3 py-2 text-sm focus:border-teal-500 outline-none" />
+              </div>
+              <p id="company-note" class="text-xs text-ink-500 leading-relaxed hidden"></p>
+            </div>
+          </div>
+
+          <!-- Your details -->
+          <div>
+            <div class="flex items-baseline gap-2">
+              <span class="text-xs font-bold text-teal-600">+</span>
+              <h3 class="font-semibold text-ink-900">Your details <span class="font-normal text-ink-400 text-sm">(merged in-browser)</span></h3>
+            </div>
+            <div class="mt-3 grid sm:grid-cols-2 gap-3">
+              <div>
+                <label for="f-name" class="text-sm font-medium text-ink-700">Full name</label>
+                <input id="f-name" type="text" autocomplete="name" class="mt-1 w-full rounded-lg border border-ink-800/20 px-3 py-2 text-sm focus:border-teal-500 outline-none" />
+              </div>
+              <div>
+                <label for="f-email" class="text-sm font-medium text-ink-700">Email</label>
+                <input id="f-email" type="email" autocomplete="email" class="mt-1 w-full rounded-lg border border-ink-800/20 px-3 py-2 text-sm focus:border-teal-500 outline-none" />
+              </div>
+              <div>
+                <label for="f-account" class="text-sm font-medium text-ink-700">Account / username <span class="text-ink-400">(optional)</span></label>
+                <input id="f-account" type="text" autocomplete="off" class="mt-1 w-full rounded-lg border border-ink-800/20 px-3 py-2 text-sm focus:border-teal-500 outline-none" />
+              </div>
+              <div>
+                <label for="f-address" class="text-sm font-medium text-ink-700">Mailing address <span class="text-ink-400">(optional)</span></label>
+                <input id="f-address" type="text" autocomplete="street-address" class="mt-1 w-full rounded-lg border border-ink-800/20 px-3 py-2 text-sm focus:border-teal-500 outline-none" />
+              </div>
+            </div>
+          </div>
+
+          <button id="generate-btn" type="button"
+            class="w-full rounded-xl bg-ink-900 text-paper-50 font-semibold px-5 py-3 hover:bg-ink-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            disabled>
+            Generate my letter
+          </button>
+          <p id="generate-hint" class="text-xs text-ink-500 text-center">Pick a right, a place, and a company to begin.</p>
+        </div>
+
+        <!-- RIGHT: output + log -->
+        <div class="p-6 sm:p-9 bg-paper-50/60 space-y-6">
+          <!-- DROP callout for CA + delete -->
+          <div id="drop-callout" class="hidden rounded-xl border border-gold-400/50 bg-gold-300/15 px-4 py-3 text-sm text-ink-800 leading-relaxed">
+            <strong class="text-ink-900">File once, reach every broker.</strong>
+            If this is a <em>registered data broker</em>, you don't have to write to it
+            alone. California residents can file a single deletion request at
+            <a href="https://privacy.ca.gov/drop" class="underline decoration-gold-500 underline-offset-2 hover:text-ink-900" target="_blank" rel="noopener noreferrer">privacy.ca.gov/drop</a>
+            and it fans out to all registered brokers. Use the letter below for
+            companies that aren't registered brokers, or as a paper trail.
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between gap-2">
+              <label for="letter-out" class="text-sm font-semibold text-ink-900">Your letter</label>
+              <span id="letter-badge" class="text-xs text-ink-400"></span>
+            </div>
+            <textarea id="letter-out" rows="16" spellcheck="false"
+              class="mt-2 w-full rounded-xl border border-ink-800/15 bg-white px-4 py-3 text-[13px] leading-relaxed font-mono text-ink-800 focus:border-teal-500 outline-none resize-y"
+              placeholder="Your generated request letter will appear here. You can edit it before sending."></textarea>
+          </div>
+
+          <div class="flex flex-wrap gap-2">
+            <button id="copy-btn" type="button" disabled
+              class="inline-flex items-center gap-1.5 rounded-lg bg-teal-600 text-white text-sm font-medium px-4 py-2 hover:bg-teal-500 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+              Copy to clipboard
+            </button>
+            <a id="mailto-btn" href="#" aria-disabled="true"
+              class="inline-flex items-center gap-1.5 rounded-lg border border-ink-800/20 text-ink-800 text-sm font-medium px-4 py-2 hover:border-teal-500 transition-colors pointer-events-none opacity-40">
+              Open in email
+            </a>
+            <a id="portal-btn" href="#" target="_blank" rel="noopener noreferrer"
+              class="hidden inline-flex items-center gap-1.5 rounded-lg border border-ink-800/20 text-ink-800 text-sm font-medium px-4 py-2 hover:border-teal-500 transition-colors">
+              Open privacy portal ↗
+            </a>
+            <button id="log-btn" type="button" disabled
+              class="inline-flex items-center gap-1.5 rounded-lg bg-ink-900 text-paper-50 text-sm font-medium px-4 py-2 hover:bg-ink-800 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+              Log this request → mint receipt
+            </button>
+          </div>
+          <p id="action-status" class="text-xs text-teal-600 h-4" aria-live="polite"></p>
+
+          <!-- The request log -->
+          <div class="pt-2">
+            <div class="flex items-center justify-between">
+              <h3 class="text-sm font-semibold text-ink-900">Your request log</h3>
+              <button id="clear-log" type="button" class="text-xs text-ink-400 hover:text-rose-500 transition-colors hidden">Clear all</button>
+            </div>
+            <p class="mt-1 text-xs text-ink-500 leading-relaxed">
+              Local to this browser. Each entry mints a SHA-256 receipt so you can
+              prove the letter you sent is the letter you logged.
+            </p>
+            <div id="log-empty" class="mt-3 rounded-xl border border-dashed border-ink-800/15 px-4 py-6 text-center text-sm text-ink-400">
+              No requests logged yet. Generate a letter, then log it.
+            </div>
+            <div id="log-table-wrap" class="mt-3 hidden overflow-x-auto">
+              <table class="w-full text-sm">
+                <thead>
+                  <tr class="text-left text-ink-400 border-b border-ink-800/10">
+                    <th class="py-2 pr-3 font-medium">Company</th>
+                    <th class="py-2 pr-3 font-medium">Right</th>
+                    <th class="py-2 pr-3 font-medium">Where</th>
+                    <th class="py-2 pr-3 font-medium">Date</th>
+                    <th class="py-2 pr-3 font-medium">Receipt</th>
+                    <th class="py-2 font-medium sr-only">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="log-body"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <p class="text-xs text-ink-400 leading-relaxed border-t border-ink-800/10 pt-4">
+            This tool provides templates and general information, not legal advice.
+            Statutes and deadlines are summarized in plain English; check the linked
+            official sources for the authoritative text.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import registry from '../data/registry.json';
+  import { buildLetter, canonicalRequest, RIGHTS, JURISDICTIONS } from '../data/letters.js';
+  import { appendLog, readLog, removeLog, clearLog } from '../lib/receipts.js';
+
+  const $ = (id) => document.getElementById(id);
+  const state = {
+    right: '', jurisdiction: '', companyId: '', companyName: '',
+    contact: '', contactType: '', portabilityUrl: '', notes: '',
+  };
+  let current = null; // { subject, body, date }
+
+  // Populate company registry dropdown
+  const sel = $('company-select');
+  for (const c of registry.companies) {
+    const opt = document.createElement('option');
+    opt.value = c.id;
+    opt.textContent = c.name;
+    sel.appendChild(opt);
+  }
+
+  const jurShort = { ca: 'CA', eu: 'EU/UK', other: 'US state' };
+  const rightShort = { access: 'Access', delete: 'Deletion', port: 'Portability' };
+
+  function setPickerSelection(groupSelector, attr, value) {
+    document.querySelectorAll(groupSelector).forEach((el) => {
+      const on = el.getAttribute(attr) === value;
+      el.setAttribute('aria-checked', on ? 'true' : 'false');
+      el.classList.toggle('border-teal-500', on);
+      el.classList.toggle('bg-teal-500/5', on);
+      el.classList.toggle('ring-1', on);
+      el.classList.toggle('ring-teal-500/40', on);
+    });
+  }
+
+  // Right picker
+  document.querySelectorAll('.right-opt').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      state.right = btn.dataset.right;
+      setPickerSelection('.right-opt', 'data-right', state.right);
+      updateDropCallout();
+      refreshGenerateState();
+    });
+  });
+
+  // Jurisdiction picker
+  document.querySelectorAll('.jur-opt').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      state.jurisdiction = btn.dataset.jur;
+      setPickerSelection('.jur-opt', 'data-jur', state.jurisdiction);
+      $('state-wrap').classList.toggle('hidden', state.jurisdiction !== 'other');
+      updateDropCallout();
+      refreshGenerateState();
+    });
+  });
+
+  function updateDropCallout() {
+    const show = state.jurisdiction === 'ca' && state.right === 'delete';
+    $('drop-callout').classList.toggle('hidden', !show);
+  }
+
+  // Company selection
+  sel.addEventListener('change', () => {
+    const c = registry.companies.find((x) => x.id === sel.value);
+    if (c) {
+      state.companyId = c.id;
+      state.companyName = c.name;
+      state.contact = c.contact || '';
+      state.contactType = c.contactType || 'unknown';
+      state.portabilityUrl = c.portabilityUrl || '';
+      state.notes = c.notes || '';
+      $('company-free').value = '';
+      const note = $('company-note');
+      const checked = c.lastChecked ? ` · last checked ${c.lastChecked}` : '';
+      note.textContent = (c.notes || 'Contact on file.') + checked;
+      note.classList.remove('hidden');
+    } else {
+      state.companyId = '';
+      $('company-note').classList.add('hidden');
+    }
+    refreshGenerateState();
+  });
+
+  $('company-free').addEventListener('input', (e) => {
+    const v = e.target.value.trim();
+    if (v) {
+      sel.value = '';
+      state.companyId = '';
+      state.companyName = v;
+      state.contact = '';
+      state.contactType = 'unknown';
+      state.portabilityUrl = '';
+      state.notes = '';
+      $('company-note').classList.add('hidden');
+    } else if (!sel.value) {
+      state.companyName = '';
+    }
+    refreshGenerateState();
+  });
+
+  function refreshGenerateState() {
+    const ready = state.right && state.jurisdiction && state.companyName;
+    $('generate-btn').disabled = !ready;
+    $('generate-hint').classList.toggle('hidden', !!ready);
+  }
+
+  // Generate
+  $('generate-btn').addEventListener('click', () => {
+    if (!state.right || !state.jurisdiction || !state.companyName) return;
+    // Choose the portability portal contact when porting on Google et al.
+    const { subject, body } = buildLetter({
+      right: state.right,
+      jurisdiction: state.jurisdiction,
+      companyName: state.companyName,
+      fullName: $('f-name').value,
+      email: $('f-email').value,
+      account: $('f-account').value,
+      address: $('f-address').value,
+      stateName: $('state-name').value,
+    });
+    const date = new Date().toISOString().slice(0, 10);
+    current = { subject, body, date };
+    $('letter-out').value = body;
+    $('letter-badge').textContent = `${rightShort[state.right]} · ${jurShort[state.jurisdiction]}`;
+    $('copy-btn').disabled = false;
+    $('log-btn').disabled = false;
+    setupMailto(subject, body);
+    setupPortal();
+    setStatus('Letter generated. Review and edit before sending.');
+  });
+
+  function setupMailto(subject, body) {
+    const mail = $('mailto-btn');
+    const to = state.contactType === 'email' ? state.contact : '';
+    const href = `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent($('letter-out').value)}`;
+    mail.href = href;
+    mail.classList.remove('pointer-events-none', 'opacity-40');
+    mail.setAttribute('aria-disabled', 'false');
+    mail.textContent = to ? `Email to ${to}` : 'Open in email';
+  }
+
+  function setupPortal() {
+    const portal = $('portal-btn');
+    // Prefer the portability deep-link when porting; else the general portal URL.
+    let url = '';
+    if (state.right === 'port' && state.portabilityUrl) url = state.portabilityUrl;
+    else if (state.contactType === 'url') url = state.contact;
+    else if (state.portabilityUrl) url = state.portabilityUrl;
+    if (url) {
+      portal.href = url;
+      portal.classList.remove('hidden');
+    } else {
+      portal.classList.add('hidden');
+    }
+  }
+
+  // Copy
+  $('copy-btn').addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText($('letter-out').value);
+      setStatus('Copied to clipboard.');
+    } catch {
+      $('letter-out').select();
+      setStatus('Select-all done — press Cmd/Ctrl+C to copy.');
+    }
+  });
+
+  // Keep mailto in sync if the user edits the letter
+  $('letter-out').addEventListener('input', () => {
+    if (current) setupMailto(current.subject, $('letter-out').value);
+  });
+
+  // Log → mint receipt
+  $('log-btn').addEventListener('click', async () => {
+    if (!current) return;
+    const entry = {
+      company: state.companyName,
+      right: state.right,
+      jurisdiction: state.jurisdiction,
+      date: current.date,
+      subject: current.subject,
+      body: $('letter-out').value,
+    };
+    const canonical = canonicalRequest(entry);
+    const rec = await appendLog(entry, canonical);
+    renderLog();
+    setStatus(`Logged. Receipt ${rec.shortHash} minted.`);
+  });
+
+  function setStatus(msg) {
+    $('action-status').textContent = msg;
+  }
+
+  // Render the request log table
+  function renderLog() {
+    const entries = readLog();
+    const empty = $('log-empty');
+    const wrap = $('log-table-wrap');
+    const clearBtn = $('clear-log');
+    if (!entries.length) {
+      empty.classList.remove('hidden');
+      wrap.classList.add('hidden');
+      clearBtn.classList.add('hidden');
+      return;
+    }
+    empty.classList.add('hidden');
+    wrap.classList.remove('hidden');
+    clearBtn.classList.remove('hidden');
+    const body = $('log-body');
+    body.innerHTML = '';
+    for (const e of entries) {
+      const tr = document.createElement('tr');
+      tr.className = 'border-b border-ink-800/5 align-top';
+      tr.innerHTML = `
+        <td class="py-2 pr-3 text-ink-800">${escapeHtml(e.company)}</td>
+        <td class="py-2 pr-3 text-ink-600">${rightShort[e.right] || e.right}</td>
+        <td class="py-2 pr-3 text-ink-600">${jurShort[e.jurisdiction] || e.jurisdiction}</td>
+        <td class="py-2 pr-3 text-ink-600">${e.date}</td>
+        <td class="py-2 pr-3"><code class="hashmono text-xs text-teal-600" title="${e.hash}">${e.shortHash}</code></td>
+        <td class="py-2 text-right"><button data-hash="${e.hash}" class="del-btn text-xs text-ink-300 hover:text-rose-500">remove</button></td>`;
+      body.appendChild(tr);
+    }
+    body.querySelectorAll('.del-btn').forEach((b) => {
+      b.addEventListener('click', () => {
+        removeLog(b.dataset.hash);
+        renderLog();
+        setStatus('Entry removed.');
+      });
+    });
+  }
+
+  $('clear-log').addEventListener('click', () => {
+    clearLog();
+    renderLog();
+    setStatus('Request log cleared.');
+  });
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+
+  // Init
+  renderLog();
+</script>

@@ -1,0 +1,84 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'clause.ink — receipts for your agreements',
+  description = 'California built something good with the Delete Act. Here is how to use it, and how to watch whether it works. A plain-English DROP hub and a client-side data-rights request generator.',
+} = Astro.props;
+
+const year = 2026;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={Astro.url.href} />
+    <meta name="theme-color" content="#0b0f1a" />
+
+    <!-- Open Graph — static, no third-party embeds -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:site_name" content="clause.ink" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+    <!--
+      GR-01: no third-party trackers, no CDN fonts, no analytics.
+      Nothing loads from off-origin. The cell is sealed.
+    -->
+  </head>
+  <body class="min-h-screen flex flex-col">
+    <header class="border-b border-ink-800/10 bg-paper-50/80 backdrop-blur-sm sticky top-0 z-30">
+      <div class="mx-auto max-w-5xl px-5 h-14 flex items-center justify-between">
+        <a href="/" class="flex items-center gap-2 font-semibold tracking-tight text-ink-900">
+          <span aria-hidden="true" class="inline-block w-2.5 h-2.5 rounded-full bg-teal-500"></span>
+          clause<span class="text-ink-400">.ink</span>
+        </a>
+        <nav class="flex items-center gap-5 text-sm">
+          <a href="/drop" class="text-ink-700 hover:text-ink-900 transition-colors">DROP hub</a>
+          <a
+            href="/drop#generator"
+            class="inline-flex items-center gap-1.5 rounded-full bg-ink-900 text-paper-50 px-3.5 py-1.5 font-medium hover:bg-ink-800 transition-colors"
+            >Request generator</a
+          >
+        </nav>
+      </div>
+    </header>
+
+    <main class="flex-1">
+      <slot />
+    </main>
+
+    <footer class="border-t border-ink-800/10 mt-24">
+      <div class="mx-auto max-w-5xl px-5 py-10 text-sm text-ink-500">
+        <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div class="max-w-md">
+            <p class="font-semibold text-ink-800">clause.ink</p>
+            <p class="mt-1.5 leading-relaxed">
+              Receipts for your agreements. California built something good — here is how
+              to use it, and how to watch whether it works.
+            </p>
+          </div>
+          <div class="text-ink-500">
+            <p>
+              This site is informational, not legal advice. It runs entirely in your
+              browser: nothing you type leaves this page unless you send it yourself.
+            </p>
+            <p class="mt-2">© {year} clause.ink</p>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

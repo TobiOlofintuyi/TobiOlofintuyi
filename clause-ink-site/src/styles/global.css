@@ -1,0 +1,92 @@
+@import "tailwindcss";
+
+/*
+  clause.ink design system — "ink on paper."
+  Voice: admiration, then reveal, then tool. Editorial, calm, pro-transparency.
+  Palette: deep ink, warm paper, a California-gold urgency signal, a calm
+  verifier teal for the tool. No third-party fonts loaded from a CDN
+  (GR-01: nothing leaves the visitor's browser) — system font stack only.
+*/
+@theme {
+  --color-ink-950: #0b0f1a;
+  --color-ink-900: #10151f;
+  --color-ink-800: #1b2230;
+  --color-ink-700: #2b3446;
+  --color-ink-600: #3d475c;
+  --color-ink-500: #55617a;
+  --color-ink-400: #7d879c;
+  --color-ink-300: #aab2c4;
+  --color-ink-200: #ced4df;
+  --color-ink-100: #e6eaf1;
+
+  --color-paper-50: #fbf9f4;
+  --color-paper-100: #f4f0e6;
+  --color-paper-200: #e9e2d2;
+
+  --color-gold-500: #c8862a;
+  --color-gold-400: #dca23f;
+  --color-gold-300: #efc06a;
+
+  --color-teal-600: #16786f;
+  --color-teal-500: #1f9488;
+  --color-teal-400: #38b2a4;
+
+  --color-rose-500: #b3452f;
+
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    Helvetica, Arial, sans-serif;
+  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas,
+    monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-paper-50);
+  color: var(--color-ink-900);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* readable measure for long-form prose blocks */
+.prose-measure {
+  max-width: 68ch;
+}
+
+/* the "receipt" monospace treatment for hashes */
+.hashmono {
+  font-family: var(--font-mono);
+  letter-spacing: 0.01em;
+}
+
+/* subtle paper texture divider */
+.rule-ink {
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--color-ink-300),
+    transparent
+  );
+}
+
+/* focus visibility for keyboard users */
+:where(a, button, input, select, textarea):focus-visible {
+  outline: 2px solid var(--color-teal-500);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  * {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}

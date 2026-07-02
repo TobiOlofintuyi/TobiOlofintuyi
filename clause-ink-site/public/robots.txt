@@ -1,0 +1,4 @@
+# clause.ink
+# Private preview surface during the DROP build — not for indexing yet.
+User-agent: *
+Disallow: /

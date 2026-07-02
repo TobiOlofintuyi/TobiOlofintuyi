@@ -1,0 +1,205 @@
+---
+import Base from '../layouts/Base.astro';
+import CountdownAug1 from '../components/CountdownAug1.astro';
+import EmailCapture from '../components/EmailCapture.astro';
+import Scoreboard from '../components/Scoreboard.astro';
+import Generator from '../components/Generator.astro';
+
+const filingSteps = [
+  {
+    n: 1,
+    title: 'Confirm you can file',
+    body: "DROP filing is for California residents. If you live in California, you're eligible. If you don't, you can still use the request generator below to write to companies directly.",
+  },
+  {
+    n: 2,
+    title: 'Go to the official site',
+    body: 'Open privacy.ca.gov/drop — the state\'s own platform, run by the California Privacy Protection Agency. This page points you there; we never stand in for it.',
+    link: { href: 'https://privacy.ca.gov/drop', label: 'privacy.ca.gov/drop' },
+  },
+  {
+    n: 3,
+    title: 'Verify your identity',
+    body: 'DROP asks for enough information to confirm the request is really yours. This is what lets one declaration act on your behalf across every registered broker.',
+  },
+  {
+    n: 4,
+    title: 'Make one deletion request',
+    body: 'You declare your request once. The platform propagates it to all registered data brokers — you do not write to them one by one.',
+  },
+  {
+    n: 5,
+    title: 'Keep your receipt',
+    body: 'Save your confirmation. Then use the generator below to log it, mint a hash receipt, and start a paper trail you control — so later you can check whether it actually stuck.',
+  },
+];
+---
+
+<Base title="DROP — file once, reach every registered broker | clause.ink">
+  <!-- HERO / ADMIRATION -->
+  <section class="mx-auto max-w-5xl px-5 pt-14 sm:pt-20 pb-10">
+    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-teal-600">
+      California Delete Act · DROP
+    </p>
+    <h1 class="mt-3 text-4xl sm:text-5xl font-semibold tracking-tight text-ink-950 leading-[1.05]">
+      California built something<br class="hidden sm:block" /> genuinely good.
+    </h1>
+    <p class="mt-5 max-w-2xl text-lg text-ink-700 leading-relaxed prose-measure">
+      With the Delete Act, one declared instruction now propagates across every
+      registered data broker in the state — a single request, honored with the
+      force of law. It is the clearest thing anyone has shipped that treats your
+      data rights as something you can actually <em>exercise</em>, not just read
+      about. Here is how to use it — and how to watch whether it works.
+    </p>
+    <div class="mt-8">
+      <CountdownAug1 />
+    </div>
+    <div class="mt-8 flex flex-wrap gap-3">
+      <a href="#generator" class="rounded-full bg-ink-900 text-paper-50 font-medium px-5 py-2.5 hover:bg-ink-800 transition-colors">
+        Open the request generator
+      </a>
+      <a href="#walkthrough" class="rounded-full border border-ink-800/20 text-ink-800 font-medium px-5 py-2.5 hover:border-teal-500 transition-colors">
+        How to file DROP →
+      </a>
+    </div>
+  </section>
+
+  <div class="mx-auto max-w-5xl px-5"><div class="rule-ink"></div></div>
+
+  <!-- WHAT IT BUILT / EXPLAINER -->
+  <section class="mx-auto max-w-5xl px-5 py-14">
+    <div class="grid lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] gap-10">
+      <div class="prose-measure">
+        <h2 class="text-2xl font-semibold tracking-tight text-ink-900">
+          What the Delete Act actually built
+        </h2>
+        <p class="mt-4 text-ink-700 leading-relaxed">
+          The Delete Act (SB 362) created <strong>DROP</strong> — the Delete
+          Requests and Opt-out Platform — run by the California Privacy Protection
+          Agency. The idea is elegant: instead of hunting down hundreds of data
+          brokers and filing with each one, you make <strong>one</strong> deletion
+          request through the state, and it fans out to <strong>every registered
+          broker</strong> at once.
+        </p>
+        <p class="mt-4 text-ink-700 leading-relaxed">
+          When DROP launched in January 2026, roughly <strong>545 data brokers</strong>
+          were on the state registry; by June 2026 that count hit a record
+          <strong>581</strong>. In the first weeks, about
+          <strong>215,000 Californians</strong> filed deletion requests — a number
+          that passed <strong>300,000</strong> by June 2026. One declaration,
+          propagated across all of them — the state shipping, with the force of law,
+          the thing privacy advocates have wanted for a decade.
+        </p>
+
+        <h3 class="mt-9 text-lg font-semibold text-ink-900">The honest part: the verification gap</h3>
+        <p class="mt-3 text-ink-700 leading-relaxed">
+          Here is what the law does not hand you. Brokers <em>self-report</em> that
+          they deleted your data. There is no built-in way for a person who filed to
+          independently confirm it actually happened — that their record is gone
+          from each broker, and stays gone. More than 300,000 people have made a
+          request; almost none of them can prove, on their own, that it stuck.
+        </p>
+        <p class="mt-3 text-ink-700 leading-relaxed">
+          That gap is not a reason to distrust the law. It is the reason to keep a
+          receipt. This page hands you two things: a guide to filing, and a tool to
+          start your own verifiable paper trail — beginning with a hash receipt for
+          every request you make.
+        </p>
+      </div>
+
+      <aside class="space-y-4">
+        <div class="rounded-2xl border border-ink-800/10 bg-white p-5 shadow-sm">
+          <p class="text-3xl font-semibold text-ink-950">581</p>
+          <p class="mt-1 text-sm text-ink-500">registered data brokers reached by one request <span class="text-ink-400">(Jun 2026 record; ~545 at Jan 2026 launch)</span></p>
+        </div>
+        <div class="rounded-2xl border border-ink-800/10 bg-white p-5 shadow-sm">
+          <p class="text-3xl font-semibold text-ink-950">300K+</p>
+          <p class="mt-1 text-sm text-ink-500">Californians signed up for DROP by Jun 2026 <span class="text-ink-400">(~215K in the first weeks)</span></p>
+        </div>
+        <div class="rounded-2xl border border-ink-800/10 bg-white p-5 shadow-sm">
+          <p class="text-3xl font-semibold text-ink-950">$200</p>
+          <p class="mt-1 text-sm text-ink-500">per request, per day — the penalty for a registered broker that ignores a DROP deletion, starting Aug 1, 2026</p>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <div class="mx-auto max-w-5xl px-5"><div class="rule-ink"></div></div>
+
+  <!-- FILING WALKTHROUGH -->
+  <section id="walkthrough" class="mx-auto max-w-5xl px-5 py-14 scroll-mt-16">
+    <div class="max-w-2xl">
+      <h2 class="text-2xl font-semibold tracking-tight text-ink-900">How to file DROP</h2>
+      <p class="mt-3 text-ink-700 leading-relaxed">
+        We are the guide, not the form. Every step here points you to the state's
+        own platform. California residents file at
+        <a href="https://privacy.ca.gov/drop" target="_blank" rel="noopener noreferrer" class="text-teal-600 underline underline-offset-2 hover:text-teal-500">privacy.ca.gov/drop</a>.
+      </p>
+    </div>
+
+    <ol class="mt-8 space-y-4">
+      {filingSteps.map((s) => (
+        <li class="flex gap-4 rounded-2xl border border-ink-800/10 bg-white p-5 shadow-sm">
+          <span class="shrink-0 w-9 h-9 rounded-full bg-ink-950 text-paper-50 grid place-items-center font-semibold">{s.n}</span>
+          <div>
+            <p class="font-semibold text-ink-900">{s.title}</p>
+            <p class="mt-1 text-sm text-ink-600 leading-relaxed">{s.body}</p>
+            {s.link && (
+              <a href={s.link.href} target="_blank" rel="noopener noreferrer" class="mt-2 inline-block text-sm text-teal-600 underline underline-offset-2 hover:text-teal-500">
+                {s.link.label} ↗
+              </a>
+            )}
+          </div>
+        </li>
+      ))}
+    </ol>
+
+    <p class="mt-6 text-sm text-ink-500 max-w-2xl leading-relaxed">
+      <strong class="text-ink-700">Not in California?</strong> DROP is a
+      California-resident program, so you can't file there — but you still have real
+      rights everywhere. Use the generator below to write directly to any company
+      under CCPA/CPRA, GDPR, or your own state's privacy law.
+    </p>
+  </section>
+
+  <!-- THE TOOL -->
+  <section class="py-14 bg-ink-950/[0.02]">
+    <div class="mx-auto max-w-5xl px-5 mb-8">
+      <p class="text-xs font-semibold uppercase tracking-[0.18em] text-teal-600">The tool</p>
+      <h2 class="mt-2 text-2xl sm:text-3xl font-semibold tracking-tight text-ink-900">
+        Make the request. Keep the receipt.
+      </h2>
+      <p class="mt-3 max-w-2xl text-ink-700 leading-relaxed prose-measure">
+        The Clause PRD promised a wallet for your digital agreements. This is the
+        request-side of that promise: ask any company for your data, to delete it,
+        or to hand it back in a portable format — with the right statute cited for
+        you, and a hash receipt for every request you log.
+      </p>
+    </div>
+    <Generator />
+  </section>
+
+  <!-- VERIFIER + EMAIL -->
+  <section class="mx-auto max-w-5xl px-5 py-14">
+    <div class="grid lg:grid-cols-2 gap-6 items-start">
+      <div class="prose-measure">
+        <h2 class="text-2xl font-semibold tracking-tight text-ink-900">
+          You filed. We'll help you verify it stuck.
+        </h2>
+        <p class="mt-4 text-ink-700 leading-relaxed">
+          The receipt you mint here is step one. Next comes the harder, better
+          thing: tools to check — over time, from the outside — whether the brokers
+          who said they deleted you actually did, and stayed that way. That is the
+          part the law leaves to you. We're building it. Leave your email and we'll
+          send it when it's ready.
+        </p>
+      </div>
+      <EmailCapture />
+    </div>
+  </section>
+
+  <!-- SCOREBOARD TEASER -->
+  <section class="mx-auto max-w-5xl px-5 pb-20">
+    <Scoreboard />
+  </section>
+</Base>

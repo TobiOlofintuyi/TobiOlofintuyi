@@ -1,0 +1,29 @@
+---
+// The penalty switch. Aug 1, 2026 is when retrieve-and-delete via DROP becomes
+// mandatory for registered brokers ($200 per request, per day, no cure period).
+// Factual countdown, not alarmist — a date you can plan around.
+---
+<div class="rounded-2xl border border-gold-400/40 bg-gold-300/10 px-5 py-4 flex flex-wrap items-center gap-x-6 gap-y-2">
+  <div>
+    <p class="text-xs font-semibold uppercase tracking-[0.16em] text-gold-500">The penalty switch</p>
+    <p class="mt-0.5 text-ink-800 font-medium">August 1, 2026</p>
+  </div>
+  <div class="text-sm text-ink-700 leading-relaxed max-w-md">
+    <span id="aug1-count" class="font-semibold text-ink-900">On this date,</span>
+    retrieve-and-delete via DROP becomes mandatory for registered data brokers —
+    <span class="font-medium">$200 per request, per day, no cure period.</span>
+  </div>
+</div>
+<script>
+  // Days until Aug 1, 2026. Purely informational; recomputed in-browser.
+  const el = document.getElementById('aug1-count');
+  const target = new Date('2026-08-01T00:00:00-07:00'); // California time
+  const now = new Date();
+  const days = Math.ceil((target.getTime() - now.getTime()) / 86400000);
+  if (el) {
+    if (days > 1) el.textContent = `${days} days out.`;
+    else if (days === 1) el.textContent = 'Tomorrow.';
+    else if (days === 0) el.textContent = 'Today.';
+    else el.textContent = 'Now in effect —';
+  }
+</script>

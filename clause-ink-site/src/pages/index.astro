@@ -1,0 +1,43 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base>
+  <section class="mx-auto max-w-4xl px-5 pt-20 sm:pt-28 pb-16">
+    <p class="text-xs font-semibold uppercase tracking-[0.18em] text-teal-600">clause.ink</p>
+    <h1 class="mt-4 text-4xl sm:text-6xl font-semibold tracking-tight text-ink-950 leading-[1.03]">
+      Receipts for your<br /> agreements.
+    </h1>
+    <p class="mt-6 max-w-2xl text-lg text-ink-700 leading-relaxed prose-measure">
+      Every day you accept terms, hand over data, and click "agree" — and get
+      nothing back you can hold. clause.ink is building the other half of that
+      exchange: a record you own. We're starting where the leverage is real —
+      California's Delete Act — with a hub for filing and a generator for exercising
+      your data rights anywhere.
+    </p>
+
+    <div class="mt-9 flex flex-wrap gap-3">
+      <a href="/drop" class="rounded-full bg-ink-900 text-paper-50 font-medium px-6 py-3 hover:bg-ink-800 transition-colors">
+        Go to the DROP hub →
+      </a>
+      <a href="/drop#generator" class="rounded-full border border-ink-800/20 text-ink-800 font-medium px-6 py-3 hover:border-teal-500 transition-colors">
+        Open the request generator
+      </a>
+    </div>
+
+    <div class="mt-16 grid sm:grid-cols-3 gap-4">
+      <div class="rounded-2xl border border-ink-800/10 bg-white p-5 shadow-sm">
+        <p class="font-semibold text-ink-900">File once</p>
+        <p class="mt-1.5 text-sm text-ink-600 leading-relaxed">One DROP request reaches every registered California data broker.</p>
+      </div>
+      <div class="rounded-2xl border border-ink-800/10 bg-white p-5 shadow-sm">
+        <p class="font-semibold text-ink-900">Request anywhere</p>
+        <p class="mt-1.5 text-sm text-ink-600 leading-relaxed">Access, delete, or port your data — statute-cited for CA, EU/UK, or your state.</p>
+      </div>
+      <div class="rounded-2xl border border-ink-800/10 bg-white p-5 shadow-sm">
+        <p class="font-semibold text-ink-900">Keep the receipt</p>
+        <p class="mt-1.5 text-sm text-ink-600 leading-relaxed">Every logged request mints a hash receipt, in your browser, that you control.</p>
+      </div>
+    </div>
+  </section>
+</Base>
