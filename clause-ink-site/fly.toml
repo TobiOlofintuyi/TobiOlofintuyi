@@ -4,7 +4,7 @@
 #                                fly deploy
 # The app serves dist/ behind mandatory basic auth (see deploy/entrypoint.sh).
 
-app = "clause-ink-preview"
+app = "clause-ink"
 primary_region = "sea"
 
 [build]

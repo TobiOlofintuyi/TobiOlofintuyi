@@ -21,6 +21,8 @@ run's receipt. Exact commands to finish the private sprite deploy are below.
 
 ---
 
+[2026-07-02 15:10] | M3 | deploy attempt #2 | clause-ink-site/fly.toml | Tobi confirmed destination **clause-ink.fly.dev/drop**; `fly.toml` now targets app `clause-ink`. Attempted to execute the deploy from this cloud session: flyctl install script denied by sandbox policy; official GitHub release binary → **egress 403**; probed `api.fly.io`, `api.machines.dev`, `registry.fly.io` directly → **all CONNECT 403 at the org egress proxy**. Deploying from this session is network-impossible regardless of tokens. Two unblock paths logged below (Mac commands, or environment network-policy + FLY_API_TOKEN for a future session). | y (attempt + probes logged) | — | fly.io hosts blocked by session egress policy.
+
 [2026-07-02 14:55] | M3 | deploy scaffold | clause-ink-site/{Dockerfile,fly.toml,.dockerignore,deploy/nginx.conf,deploy/entrypoint.sh} | Tobi confirmed targets: **fly.io + sprites.dev** (no Cloudflare). No fly CLI/token on this runner either (probed: no flyctl, no FLY_* env, no ~/.fly), so shipped a ready-to-run **private fly.io deploy**: multi-stage Docker build (node → nginx), HTTP basic auth that **fails closed** (container refuses to start without `BASIC_AUTH_USER`/`BASIC_AUTH_PASS` secrets), no directory listing, HTML no-store. Two commands on the Mac — see "DEPLOY — what remains". | y (config; build+smoke re-verified 14/14) | — | Deploy execution still needs Tobi's Mac (fly auth lives there).
 
 [2026-07-02 14:55] | M1 | facts: official DROP page | src/pages/drop.astro | Tobi pasted the live privacy.ca.gov/drop content; folded the authoritative mechanics into the hub: broker count → **"over 600" (state's own count)**; walkthrough rewritten with the real flow (residency via California Identity Gateway / Login.gov; minimum = name+DOB+ZIP; optional identifiers MAID/CTV-ID/VIN; narrowing via the broker-list page; **save your DROP ID**; status checking opens Aug 2026; brokers report within 90 days); added the five official statuses (Deleted / Exempted / Opted-out / Record not found / Pending) and the what-won't-be-deleted caveat (first-party, exempt, public data). Smoke 14/14, zero console errors. | y | — | —
@@ -48,21 +50,33 @@ This cloud runner has neither fly auth nor a sprite CLI, so the deploy runs on
 the Mac. The surface must stay **private (only-Tobi)** until intentionally made
 public.
 
-### Option A — fly.io (config is committed; two commands)
+### Option A — fly.io on the Mac (config is committed; destination clause-ink.fly.dev/drop)
 
-Everything is scaffolded in `clause-ink-site/` (Dockerfile, `fly.toml`,
-`deploy/`). Auth **fails closed** — the app will not serve at all without
-credentials, so it cannot be accidentally public:
+Everything is scaffolded in `clause-ink-site/` (Dockerfile, `fly.toml` → app
+`clause-ink`, `deploy/`). Auth **fails closed** — the app will not serve at all
+without credentials, so it cannot be accidentally public:
 
 ```bash
 cd clause-ink-site
-fly launch --copy-config --no-deploy     # accepts committed fly.toml (app: clause-ink-preview, region: sea)
-fly secrets set BASIC_AUTH_USER=tobi BASIC_AUTH_PASS='<pick-a-password>'
+fly apps create clause-ink               # once, if the app doesn't exist yet
+fly secrets set BASIC_AUTH_USER=tobi BASIC_AUTH_PASS='<pick-a-password>' -a clause-ink
 fly deploy
 ```
 
-Then open `https://clause-ink-preview.fly.dev`, enter the credentials, and run
-the verify-live checklist below.
+Then open `https://clause-ink.fly.dev/drop`, enter the credentials, and run the
+verify-live checklist below. To make it public later, delete the `auth_basic`
+lines in `deploy/nginx.conf` + the guard in `deploy/entrypoint.sh` and redeploy
+(or ask Forge to flip it in one commit).
+
+### Option A′ — let the agent deploy from a future cloud session
+
+This session's egress policy blocks fly.io (api.fly.io / api.machines.dev /
+registry.fly.io / github.com all CONNECT-403 at the org proxy), so the agent
+cannot deploy from here. To let it: in the Claude Code environment settings,
+(1) allow network access to `fly.io`, `api.fly.io`, `api.machines.dev`,
+`registry.fly.io`, `github.com` (for the flyctl release binary), and (2) add a
+secret env var `FLY_API_TOKEN` = an app-scoped deploy token minted on the Mac
+with `fly tokens create deploy -a clause-ink`. Then tell the agent to deploy.
 
 ### Option B — sprites.dev
 
